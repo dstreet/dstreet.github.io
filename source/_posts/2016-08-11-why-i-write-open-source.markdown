@@ -6,6 +6,8 @@ comments: true
 date: "2016-08-12"
 tags:
 - open source
+- free software
+- licensing
 ---
 
 Whether you are an individual, organization, business, or government entity releasing, maintaining, and contributing to open source software has many benefits. There are numerous articles, like <a href="http://www.infoworld.com/article/3028600/open-source-tools/whats-the-real-reason-microsoft-and-google-are-releasing-open-source.html" target="_blank">this one from InfoWorld</a>, on the subject. In fact, I could spend a lot time talking about each of these individually. Instead, I'm going to focus on what drives _me_ to write and release open source software, and why I use the licenses I do.
