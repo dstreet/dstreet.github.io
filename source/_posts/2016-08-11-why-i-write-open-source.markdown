@@ -18,7 +18,7 @@ I think most people can agree this makes sense; I write sofware to solve the pro
 
 The truth is actually much more selfish. When I first release something into the wild on GitHub, I watch the traffic graphs obsessively. For me, there is nothing more exciting in development than having someone else use your work. I try not to be a star chaser, but there is a certain high when you get that first star. The first Pull Request is even more exciting; You've released something that people _actually_ like and find useful! Who doesn't like a little validation every now and then?
 
-So, sure my reasons for realeasing open source software is mostly self-serving. The licenses I choose, however, are not. When choosing a license, I typically fall back to one of two licenses; The choice depends solely on how the work is intended to be used.
+So, sure my reasons for releasing open source software is mostly self-serving. The licenses I choose, however, are not. When choosing a license, I typically fall back to one of two licenses; The choice of which depends solely on how the work is intended to be used.
 
 Libraries and frameworks are always released under [The MIT License](https://opensource.org/licenses/MIT). This allows the works to reach a larger audience, as it is an _extremely_ permissive license. I do much care how you use these works, as long as you use them! After all, the whole point of a library or framework is build something.
 
