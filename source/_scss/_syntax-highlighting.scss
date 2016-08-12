@@ -5,10 +5,11 @@
     top: 1.2em;
     bottom: 1.2em;
   };
+  border-radius: 6px;
 
   &, .hll, pre, code {
-    background-color: #272822 !important;
-    border: none;
+    background-color: #272e31 !important;
+    border-radius: 6px;
   }
 
   pre {
@@ -43,10 +44,10 @@
   .n { color: #f8f8f2 } /* Name */
   .o { color: #f92672 } /* Operator */
   .p { color: #f8f8f2 } /* Punctuation */
-  .cm { color: #75715e } /* Comment.Multiline */
-  .cp { color: #75715e } /* Comment.Preproc */
-  .c1 { color: #75715e } /* Comment.Single */
-  .cs { color: #75715e } /* Comment.Special */
+  .cm { color: #5e7475 } /* Comment.Multiline */
+  .cp { color: #5e7475 } /* Comment.Preproc */
+  .c1 { color: #5e7475 } /* Comment.Single */
+  .cs { color: #5e7475 } /* Comment.Special */
   .ge { font-style: italic } /* Generic.Emph */
   .gs { font-weight: bold } /* Generic.Strong */
   .kc { color: #66d9ef } /* Keyword.Constant */
