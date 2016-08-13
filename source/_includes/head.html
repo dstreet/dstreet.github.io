@@ -27,6 +27,23 @@
 <meta name="MobileOptimized" content="320">
 <meta name="theme-color" content="#2ecc71">
 
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@open_dave">
+<meta name="twitter:creator" content="@open_dave">
+{% if page.title %}
+  <meta name="twitter:title" content="{{ page.title }}">
+{% else %}
+  <meta name="twitter:title" content="{{ site.title }}">
+{% endif %}
+{% if page.url %}
+  <meta name="twitter:url" content="{{ site.url }}{{ page.url }}">
+{% endif %}
+{% if page.description %}
+  <meta name="twitter:description" content="{{ page.description }}">
+{% else %}
+  <meta name="twitter:description" content="{{ site.description }}">
+{% endif %}
+
 {% comment %}
   rel paginator previous page
 {% endcomment %}
