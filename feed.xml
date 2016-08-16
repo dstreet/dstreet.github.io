@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>dstreet</title>
+    <description>Musings on development</description>
+    <link>https://dstreet.github.io/</link>
+    <atom:link href="https://dstreet.github.io/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Tue, 16 Aug 2016 12:23:00 -0400</pubDate>
+    <lastBuildDate>Tue, 16 Aug 2016 12:23:00 -0400</lastBuildDate>
+    <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Learning a New Language</title>
+        <description>&lt;p&gt;Every now and then I get an itch. An itch to learn something new, to fully immerse myself in a new language, framework, or library. I’ve had this itch for a while now, but for a number of reasons haven’t been able to scratch it. Well, it finally became unbearable and I’ve now started learning &lt;a href=&quot;http://elixir-lang.org/&quot;&gt;Elixir&lt;/a&gt;–a functional language that runs on the Erlang VM.&lt;/p&gt;
+
+&lt;p&gt;Why Elixir? When I first started looking into a new language, I focused on Go and Rust. Both look like amazing languages, and Go in particular has a vibrant community around it. However, I couldn’t choose between them primarily because neither of the two languages felt all that exotic or sexy. Yes. Sexy. I then came across Elixir, and it was the perfect language to get my feet wet with a pure functional language.&lt;/p&gt;
+
+&lt;p&gt;At first I still completely wasn’t sold, so I started reading through the docs until I came across some patterns and capabilities of the language. Firstly, its a functional language, where &lt;em&gt;all&lt;/em&gt; data is immutable, even primatives. Which, from my JavaScript background, is highly appealing. Secondly, Elixir’s pattern matching is very elegant and deeply rooted in the language and its idioms. Lastly, and arguably most importantly, being built on the Erlang VM, the language utilizes processes to achieve excellent fault-tolerance. And when I say processes, I do not mean at the OS level; These are Erlang processes, which are scheduled by the Erlang VM and do not share state or memory with other running processes. Additionaly, processes can be easily distributed, even across machines–making distributed systems easier to manage.&lt;/p&gt;
+
+&lt;p&gt;I am still only a few days in to learning this fantastic language, but I expect it will be a real challenge and joy to work with. While the community surrounding Elixir is still young and small, I see that it will continue to grow and gain traction as the industry continues to move towards more distributed architectures.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 16 Aug 2016 18:06:53 -0400</pubDate>
+        <link>https://dstreet.github.io/learning-a-new-language</link>
+        <guid isPermaLink="true">https://dstreet.github.io/learning-a-new-language</guid>
+        
+        <category>elixir</category>
+        
+        <category>erlang</category>
+        
+        <category>functional</category>
+        
+        <category>language</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Programmatic Promise Chaining</title>
+        <description>&lt;p&gt;If you’ve used JavaScript Promises, then you’ve probably used &lt;code&gt;Promise.all()&lt;/code&gt; as well. If not, &lt;code&gt;Promise.all()&lt;/code&gt; returns a Promise and resolves once all individual Promises have resolved. It is important to note, howevever, that each Promises is executed &lt;em&gt;concurrently&lt;/em&gt;. Generally speaking, this is a good thing as it reduced bottlenecks. However, this also opens your application up to issues with race conditions.&lt;/p&gt;
+
+&lt;p&gt;This is usually a fairly easy issue to resolve. An instance of Promise will expose the method, &lt;code&gt;then()&lt;/code&gt;, which allows you to control the flow of Promises. The problem comes when you need the brevity of &lt;code&gt;Promises.all()&lt;/code&gt; and the flow of a &lt;code&gt;.then()&lt;/code&gt; Promise chain. Also, what if the number and/or composition of Promises isn’t known until runtime? Clearly there is a need for a synchronous version of &lt;code&gt;Promise.all()&lt;/code&gt;. By synchronous I mean each Promise runs in sequence, but the overall process would still happen outside the main application thread.&lt;/p&gt;
+
+&lt;p&gt;Luckily, there is a way to handle such situations. As an example, we’ll create a simple middleware handler class.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;kr&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MiddlewareHandler&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;constructor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;middleware&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Add a new middleware function&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;middleware&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;push&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Execute the middleware&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(...&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;_getPromiseSequence&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;middleware&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// Get a Promise sequence&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;_getPromiseSequence&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;promises&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;promises&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;chain&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;chain&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;apply&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// New handler instance&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;handler&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MiddlewareHandler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Add middleware to increment response count&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;assign&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({},&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Add middleware to increment response count after a 200ms delay&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;
+                &lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;assign&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({},&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;count&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Add middleware to update the response status&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;assign&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({},&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;403&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// Run the middleware&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;handler&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;someone&amp;#39;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(([&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;res&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If you run the above example, you should see the following in the console:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;403&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In this example, we define a new class, &lt;code&gt;MiddlewareHandler&lt;/code&gt;, which is responsible for all logic surrounding middleware. The &lt;code&gt;use()&lt;/code&gt; method allows us to push a new middleware function into the queue, and &lt;code&gt;run()&lt;/code&gt; will execute each of the middleware functions and return a Promise. In order to maintain some level of immutability, the return value (or resolved value) of one function is the input of the next.&lt;/p&gt;
+
+&lt;p&gt;The private method, &lt;code&gt;_getPromiseSequence()&lt;/code&gt; is what constructs the Promise chain from the array of middleware functions. It works by using &lt;code&gt;Array.reduce()&lt;/code&gt; to iterate though each of the functions.&lt;/p&gt;
+
+&lt;p&gt;There are two important things to note in this pattern. First, in order to pass multiple arguments to each middleware function, the functions must return or resolve an array, where each element corresponds to one of the arguments. This array is then passed to &lt;code&gt;apply()&lt;/code&gt; in the &lt;code&gt;_getPromiseSequence()&lt;/code&gt; method so that each element can be passed an individual arguments. Secondly, because of the nature of &lt;code&gt;then()&lt;/code&gt;, a middleware function does not have to return a Promise; Any &lt;code&gt;return&lt;/code&gt; value is treated as a &lt;code&gt;Promise.resolve()&lt;/code&gt; internally. Similarly, any &lt;code&gt;throw&lt;/code&gt; is treated as &lt;code&gt;Promise.reject()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;This is an extremely useful pattern and has many applications, but it should be used only when necessary.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 15 Aug 2016 00:00:00 -0400</pubDate>
+        <link>https://dstreet.github.io/programmatic-promise-chaining</link>
+        <guid isPermaLink="true">https://dstreet.github.io/programmatic-promise-chaining</guid>
+        
+        <category>javascript</category>
+        
+        <category>promises</category>
+        
+        <category>es6</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Why I Write Open Source</title>
+        <description>&lt;p&gt;Whether you are an individual, organization, business, or government entity releasing, maintaining, and contributing to open source software has many benefits. There are numerous articles, like &lt;a href=&quot;http://www.infoworld.com/article/3028600/open-source-tools/whats-the-real-reason-microsoft-and-google-are-releasing-open-source.html&quot; target=&quot;_blank&quot;&gt;this one from InfoWorld&lt;/a&gt;, on the subject. In fact, I could spend a lot time talking about each of these individually. Instead, I’m going to focus on what drives &lt;em&gt;me&lt;/em&gt; to write and release open source software, and why I use the licenses I do.&lt;/p&gt;
+
+&lt;p&gt;Before I begin, its probably worth noting that I have slightly obsessive tendencies. That combined with a passion for all things programming lead to the &lt;em&gt;need&lt;/em&gt; to solve problems, especially those relating to programming and software development themselves. This, of course, leads to the development of tooling, libraries, and frameworks to solve these problems.&lt;/p&gt;
+
+&lt;p&gt;I think most people can agree this makes sense; I write sofware to solve the problems that I face. But why release it as open source? I could say that I release it under an open source license because its a great learning expercise, it benefits the larger development community, or just because I don’t know what else to do with it. While these are all valid true, they are not my &lt;em&gt;primary&lt;/em&gt; motivation.&lt;/p&gt;
+
+&lt;p&gt;The truth is actually much more selfish. When I first release something into the wild on GitHub, I watch the traffic graphs obsessively. For me, there is nothing more exciting in development than having someone else use your work. I try not to be a star chaser, but there is a certain high when you get that first star. The first Pull Request is even more exciting; You’ve released something that people &lt;em&gt;actually&lt;/em&gt; like and find useful! Who doesn’t like a little validation every now and then?&lt;/p&gt;
+
+&lt;p&gt;So, sure my reasons for releasing open source software is mostly self-serving. The licenses I choose, however, are not. When choosing a license, I typically fall back to one of two licenses; The choice of which depends solely on how the work is intended to be used.&lt;/p&gt;
+
+&lt;p&gt;Libraries and frameworks are always released under &lt;a href=&quot;https://opensource.org/licenses/MIT&quot;&gt;The MIT License&lt;/a&gt;. This allows the works to reach a larger audience, as it is an &lt;em&gt;extremely&lt;/em&gt; permissive license. I do much care how you use these works, as long as you use them! After all, the whole point of a library or framework is build something.&lt;/p&gt;
+
+&lt;p&gt;Occasionally I will create a piece of &lt;em&gt;software&lt;/em&gt;–something that is not meant to be included in a codebase, but is rather tool. When releaseing a piece of work like this, I fallback to the &lt;a href=&quot;https://opensource.org/licenses/GPL-3.0&quot;&gt;GNU General Public License, version 3&lt;/a&gt;. This is a &lt;em&gt;less&lt;/em&gt; permissive license, so why would I choose it? Since the final product is a piece of “software” and not a library used in the &lt;em&gt;making&lt;/em&gt; of sofware, I want it and any derivative works to remain &lt;em&gt;free&lt;/em&gt; (as in freedom), and the GPL ensures this. The free software landscape is vibrant and diverse, and I wish for it stay that way.&lt;/p&gt;
+
+&lt;p&gt;When it comes to deciding whether or not to release a project as open source its important to understand your motivations. In the case of open source, this helps form an idea of what your commitment might be and how much time you expect to invest in these projects. What are your motivations for writing open source, or conversely, choosing &lt;em&gt;not&lt;/em&gt; to release open source?&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;For those of you finely atuned to the nuances between “open source” and “free software”, you may be asking why I speak more to “open source” than “free software,” and do I fall more heavily on the “open source” side. To that, I would say “its complicated.” In this article I have used both terms, and have done so with great intent. In a very general way, I write “open source” libraries and “free software” programs.&lt;/p&gt;
+
+&lt;p&gt;When I develop a piece of software, I don’t want it to infringe on any user’s freedoms. Nor do I want any derivative work to infringe on any user’s freedoms.&lt;/p&gt;
+
+&lt;p&gt;For libraries, I fully accept that in order for my code to be used, it will at times need to be used in a closed source environment. However, this is not say that I condone using these libraries to create software that infringes upon a user’s freedoms.&lt;/p&gt;
+
+&lt;p&gt;For more information on open source and free software, please check out the “official” definitions of &lt;a href=&quot;https://opensource.org/osd&quot;&gt;Open Source&lt;/a&gt; and &lt;a href=&quot;https://www.gnu.org/philosophy/free-sw.html&quot;&gt;Free Software&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Fri, 12 Aug 2016 00:00:00 -0400</pubDate>
+        <link>https://dstreet.github.io/why-write-open-source</link>
+        <guid isPermaLink="true">https://dstreet.github.io/why-write-open-source</guid>
+        
+        <category>open source</category>
+        
+        <category>free software</category>
+        
+        <category>licensing</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Mind Your Modules</title>
+        <description>&lt;p&gt;Modern JavaScript development makes extensive use of modules both on the client side as well as the server side. Let me just say, modules are fantastic! They allow us to write cleaner, and more reusable code and are an integral part of Node.js development as well as most newer frontend frameworks. The newest JavaScript spec, es6 (ES2015), has even provided new language constructs for utilizing modules: &lt;code&gt;import&lt;/code&gt; and &lt;code&gt;export&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;When it comes to modules there are three main camps, CommonJS, es6 modules, and AMD. The last of which has fallen out of grace over the past few years, so I won’t touch on that anymore than I already have.&lt;/p&gt;
+
+&lt;p&gt;CommonJS is common in Node.js development and is the primary means for including modules when using bundlers such as Browserify or Webpack:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// module.js or module/index.js&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exports&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// module2.js&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;exports&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;exports&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;bar&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// main.js&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myModule&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;./module&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;./module2&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The CommonJS implementation above written for es6 modules would look something like:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// module.js or module/index.js&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// module2.js&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;bar&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// main.js&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myModule&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;./module&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;./module2&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;For both examples, I want to call special attention to module2.js, as they export multiple properties. Whereas module.js exports only a single “default” property.&lt;/p&gt;
+
+&lt;p&gt;At the time of writing this, the es6 language features for modules is not widely supported by browsers or even Node.js; As such, a transpiler and bundler is needed in order to use these. This is typically a combination of Babel with either Browserify or Webpack.&lt;/p&gt;
+
+&lt;p&gt;To over simplify the way these bundlers work, they append the contents of these files being imported to a final “bundled” file. To no fault of the bundlers, this can lead to some optimization concerns, especially when importing a file that contains multiple exports. Because the final bundle contains the entire file contents of an imported module, there is the potential to include a large amount of unused code. This is particularly concerning for frontend applications where file size and the time it takes for browsers to parse JavaScript are extremely important for performance reasons.&lt;/p&gt;
+
+&lt;p&gt;To avoid this issue, it is best to avoid modules that have multiple exports unless it is absolutely necessary or you know that you will be utilizing each of the exports. In order to achieve this, each module can be broken out into its own file. If we were to re-architect our original example, it might look something like:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// module.js or module/index.js&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exports&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// module2/foo.js&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exports&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// module2/bar.js&lt;/span&gt;
+&lt;span class=&quot;nx&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exports&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// main.js&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myModule&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;module&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;module2/foo&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;and in es6:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// module.js or module/index.js&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// module2/foo.js&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// module2/bar.js&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// main.js&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;myModule&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;./module&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;foo&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;./module2/foo&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;From the perspective of main.js, the result is the same. It has access to all the modules it needs. The only difference being, that the resulting bundle file does not include &lt;code&gt;bar&lt;/code&gt;, the module not explicitly imported in main.js.&lt;/p&gt;
+
+&lt;p&gt;This pattern is especially important for large libraries or set of utilities. The utility library, lodash, for instance, has already adopted this pattern knowing that most users will only use a handful of the methods it provides.&lt;/p&gt;
+</description>
+        <pubDate>Thu, 11 Aug 2016 12:04:55 -0400</pubDate>
+        <link>https://dstreet.github.io/mind-your-modules</link>
+        <guid isPermaLink="true">https://dstreet.github.io/mind-your-modules</guid>
+        
+        <category>JavaScript</category>
+        
+        <category>es6</category>
+        
+        <category>CommonJS</category>
+        
+        <category>modules</category>
+        
+        <category>performance</category>
+        
+        
+      </item>
+    
+  </channel>
+</rss>

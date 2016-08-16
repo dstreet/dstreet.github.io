@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    
+
+
+
+
+
+
+
+
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title> Mind Your Modules | dstreet</title>
+
+<meta name="description" content="">
+<meta name="keywords" content="">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="theme-color" content="#2ecc71">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@open_dave">
+<meta name="twitter:creator" content="@open_dave">
+
+  <meta name="twitter:title" content="Mind Your Modules">
+
+
+  <meta name="twitter:url" content="https://dstreet.github.io/mind-your-modules">
+
+
+  <meta name="twitter:description" content="Musings on development">
+
+
+
+
+
+
+
+
+<link rel="canonical" href="https://dstreet.github.io/mind-your-modules">
+<link rel="alternate" type="application/rss+xml" title="dstreet" href="https://dstreet.github.io/feed.xml" />
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-7286719-5']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+    <meta name="robots" content="noindex"> <!--=====  Please remove it ! ! !  ======-->
+    <meta name="googlebot" content="noindex"> <!--=====  Please remove it ! ! !  ======-->
+  </head>
+  <body class="single">
+
+    <main class="container">
+
+        <header class="site-header">
+
+  <div class="container txt-center">
+
+    <nav class="navbar">
+      <ul>
+        <li><a href="/">home</a></li>
+        <li class="divider">&bull;</li>
+        <li><a href="/about">about</a></li>
+        <li class="divider">&bull;</li>
+        <li><a href="/feed.xml" target="_blank"><i class="icon icon-feed"></i> feed</a></li>
+      </ul>
+    </nav>
+
+    <a href="/" class="author-thumb">
+      <img src="/images/author.png" alt="Author thumbnail" class="dot">
+    </a>
+    <hr class="hr">
+
+  </div>
+
+</header>
+
+
+        <section class="main-content">
+          <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Mind Your Modules</h1>
+    <p class="post-meta">Aug 11, 2016</p>
+  </header>
+
+  <div class="post-content">
+    <p>Modern JavaScript development makes extensive use of modules both on the client side as well as the server side. Let me just say, modules are fantastic! They allow us to write cleaner, and more reusable code and are an integral part of Node.js development as well as most newer frontend frameworks. The newest JavaScript spec, es6 (ES2015), has even provided new language constructs for utilizing modules: <code>import</code> and <code>export</code>.</p>
+
+<p>When it comes to modules there are three main camps, CommonJS, es6 modules, and AMD. The last of which has fallen out of grace over the past few years, so I won’t touch on that anymore than I already have.</p>
+
+<p>CommonJS is common in Node.js development and is the primary means for including modules when using bundlers such as Browserify or Webpack:</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// module.js or module/index.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;foo&#39;</span> <span class="p">}</span>
+
+<span class="c1">// module2.js</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">foo</span> <span class="o">=</span> <span class="s1">&#39;foo&#39;</span>
+<span class="nx">exports</span><span class="p">.</span><span class="nx">bar</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span>
+
+<span class="c1">// main.js</span>
+<span class="kr">const</span> <span class="nx">myModule</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./module&#39;</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">foo</span>      <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./module2&#39;</span><span class="p">).</span><span class="nx">foo</span></code></pre></div>
+
+<p>The CommonJS implementation above written for es6 modules would look something like:</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// module.js or module/index.js</span>
+<span class="kr">export</span> <span class="k">default</span> <span class="p">{</span> <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;foo&#39;</span> <span class="p">}</span>
+
+<span class="c1">// module2.js</span>
+<span class="kr">export</span> <span class="kr">const</span> <span class="nx">foo</span> <span class="o">=</span> <span class="s1">&#39;foo&#39;</span>
+<span class="kr">export</span> <span class="kr">const</span> <span class="nx">bar</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span>
+
+<span class="c1">// main.js</span>
+<span class="kr">import</span> <span class="nx">myModule</span> <span class="nx">from</span> <span class="s1">&#39;./module&#39;</span>
+<span class="kr">import</span> <span class="p">{</span> <span class="nx">foo</span> <span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./module2&#39;</span></code></pre></div>
+
+<p>For both examples, I want to call special attention to module2.js, as they export multiple properties. Whereas module.js exports only a single “default” property.</p>
+
+<p>At the time of writing this, the es6 language features for modules is not widely supported by browsers or even Node.js; As such, a transpiler and bundler is needed in order to use these. This is typically a combination of Babel with either Browserify or Webpack.</p>
+
+<p>To over simplify the way these bundlers work, they append the contents of these files being imported to a final “bundled” file. To no fault of the bundlers, this can lead to some optimization concerns, especially when importing a file that contains multiple exports. Because the final bundle contains the entire file contents of an imported module, there is the potential to include a large amount of unused code. This is particularly concerning for frontend applications where file size and the time it takes for browsers to parse JavaScript are extremely important for performance reasons.</p>
+
+<p>To avoid this issue, it is best to avoid modules that have multiple exports unless it is absolutely necessary or you know that you will be utilizing each of the exports. In order to achieve this, each module can be broken out into its own file. If we were to re-architect our original example, it might look something like:</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// module.js or module/index.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;foo&#39;</span> <span class="p">}</span>
+
+<span class="c1">// module2/foo.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="s1">&#39;foo&#39;</span>
+
+<span class="c1">// module2/bar.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span>
+
+<span class="c1">// main.js</span>
+<span class="kr">const</span> <span class="nx">myModule</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;module&#39;</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">foo</span>      <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;module2/foo&#39;</span><span class="p">)</span></code></pre></div>
+
+<p>and in es6:</p>
+
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// module.js or module/index.js</span>
+<span class="kr">export</span> <span class="k">default</span> <span class="p">{</span> <span class="nx">foo</span><span class="o">:</span> <span class="s1">&#39;foo&#39;</span> <span class="p">}</span>
+
+<span class="c1">// module2/foo.js</span>
+<span class="kr">export</span> <span class="k">default</span> <span class="s1">&#39;foo&#39;</span>
+
+<span class="c1">// module2/bar.js</span>
+<span class="kr">export</span> <span class="k">default</span> <span class="s1">&#39;bar&#39;</span>
+
+<span class="c1">// main.js</span>
+<span class="kr">import</span> <span class="nx">myModule</span> <span class="nx">from</span> <span class="s1">&#39;./module&#39;</span>
+<span class="kr">import</span> <span class="nx">foo</span> <span class="nx">from</span> <span class="s1">&#39;./module2/foo&#39;</span></code></pre></div>
+
+<p>From the perspective of main.js, the result is the same. It has access to all the modules it needs. The only difference being, that the resulting bundle file does not include <code>bar</code>, the module not explicitly imported in main.js.</p>
+
+<p>This pattern is especially important for large libraries or set of utilities. The utility library, lodash, for instance, has already adopted this pattern knowing that most users will only use a handful of the methods it provides.</p>
+
+
+    <aside class="share">
+
+      <span>Share this: </span>
+
+      <a href="http://twitter.com/share?text=Mind Your Modules&amp;url=https://dstreet.github.io/mind-your-modules&amp;via=open_dave"
+      onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="icon icon-twitter-rounded"></i>
+      </a>
+
+      <a href="https://www.facebook.com/sharer/sharer.php?u=https://dstreet.github.io/mind-your-modules"
+      onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="icon icon-facebook-rounded"></i>
+      </a>
+
+    </aside>
+  </div>
+
+  
+  <hr>
+
+  <aside id="comments" class="disqus">
+
+    <h3>Comments</h3>
+
+
+    <div id="disqus_thread"></div>
+
+    <script type="text/javascript">
+      var disqus_shortname = 'davidstreetdesigns';
+      var disqus_identifier = '/mind-your-modules';
+      var disqus_title = 'Mind Your Modules';
+      var disqus_url = 'https://dstreet.github.io';
+      /*var disqus_developer = 1;*/
+
+      (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+
+    <noscript>
+      Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+    </noscript>
+
+  </aside>
+
+
+</article>
+
+        </section>
+
+        
+<div class="clearfix"></div>
+
+<footer class="site-footer txt-center">
+  <hr>
+
+  <ul class="social">
+    
+      
+        <li><a href="" target="_blank"><i class="icon icon-"></i></a></li>
+      
+        <li><a href="http://github.com/dstreet" target="_blank"><i class="icon icon-github"></i></a></li>
+      
+    
+      
+        <li><a href="" target="_blank"><i class="icon icon-"></i></a></li>
+      
+        <li><a href="http://twitter.com/open_dave" target="_blank"><i class="icon icon-twitter"></i></a></li>
+      
+    
+      
+        <li><a href="" target="_blank"><i class="icon icon-"></i></a></li>
+      
+        <li><a href="http://linkedin.com/in/david-street-552b7563" target="_blank"><i class="icon icon-linkedin"></i></a></li>
+      
+    
+  </ul>
+
+  <small>&copy; 2016 All rights reserved. Made with <a href="http://jekyllrb.com" target="_blank">Jekyll</a> and <i class="icon icon-heart"></i></small>
+  <small>by <a href="http://dstreet.github.io" target="_blank">dstreet</a></small>
+
+</footer>
+
+
+    </main>
+
+    <a href="https://github.com/dstreet" target="_blank" class="github-corner"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#2ebfe7; color:#f7f8f9; position: absolute; top: 0; border: 0; right: 0;"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+  </body>
+</html>
